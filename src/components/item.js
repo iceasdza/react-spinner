@@ -2,17 +2,10 @@ import styled, { css } from "styled-components";
 
 const ItemContainer = styled.div`
   position: absolute;
-  transform-origin: bottom;
-  width: 50%;
-  height: 60%;
-  left: 50%;
-  bottom: 50%;
-  padding: 0;
-  transform-origin: bottom left;
   ${(props) =>
     props.color !== null &&
     css`
-      background: ${props.color};
+      background: ${props.color || "white"};
     `}
   ${(props) => props.wedgeCss}
 `;
@@ -28,9 +21,7 @@ const Item = ({ data, index }) => {
   return (
     <>
       <ItemContainer index={index} wedgeCss={data.wedgeCss} color={data.color}>
-        <ItemChildren childCss={data.childCss}>
-          ITEM {data.name} {data.color}
-        </ItemChildren>
+        <ItemChildren childCss={data.childCss}></ItemChildren>
       </ItemContainer>
     </>
   );

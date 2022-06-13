@@ -35,45 +35,19 @@ const CenterPoint = styled.div`
 
 const BASE_ROUND = 360 * 10;
 
-const ITEM_LIST = [
-  {
-    name: "1",
-    color: "red",
-  },
-  {
-    name: "2",
-    color: "blue",
-  },
-  {
-    name: "3",
-    color: "green",
-  },
-  {
-    name: "4",
-    color: "yellow",
-  },
-  // {
-  //   name: "5",
-  //   color: "brown",
-  // },
-  // {
-  //   name: "6",
-  //   color: "pink",
-  // },
-];
-
-const Spinner = () => {
+const Spinner = ({ itemList }) => {
+  // const itemList = item;
   const [deg, setDeg] = useState(null);
   const [result, setResult] = useState();
   const [tempResult, setTempResult] = useState();
 
   const handleSpin = useCallback(() => {
-    const randomItem = Math.floor(Math.random() * ITEM_LIST.length);
-    const wedgeDeg = 360 / ITEM_LIST.length;
+    const randomItem = Math.floor(Math.random() * itemList.length);
+    const wedgeDeg = 360 / itemList.length;
     const min = wedgeDeg * randomItem + 1;
     const max = wedgeDeg * randomItem + wedgeDeg;
-    setTempResult(ITEM_LIST[randomItem]);
-    console.log(`RANDOM SECTION = ${ITEM_LIST[randomItem].color}`);
+    setTempResult(itemList[randomItem]);
+    console.log(`RANDOM SECTION = ${itemList[randomItem].color}`);
     console.log(`start with = ${min}`);
     console.log(`end with = ${max}`);
     const randomDeg = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -87,26 +61,51 @@ const Spinner = () => {
     setTimeout(() => {
       setDeg(style);
     }, 200);
-  }, []);
+  }, [itemList]);
 
   const items = useMemo(() => {
-    let share = 360 / ITEM_LIST.length;
-    const transformData = ITEM_LIST.map((data, index) => {
-      return {
-        name: data.name,
-        wedgeCss: css`
-          transform: rotate(${index * share}deg) skewY(${share - 90}deg);
-        `,
-        childCss: css`
-          transform: skewY(${-(share - 90)}deg) rotate(${share / 2}deg);
-        `,
-        color: data.color,
-      };
-    });
-    return transformData.map((data, index) => (
-      <Item key={index} data={data} index={index} />
-    ));
-  }, []);
+    if (itemList.length > 2) {
+      let share = 360 / itemList.length;
+      const transformData = itemList.map((data, index) => {
+        return {
+          name: data.name,
+          wedgeCss: css`
+            transform: rotate(${index * share}deg) skewY(${share - 90}deg);
+            transform-origin: bottom;
+            width: 50%;
+            height: 60%;
+            left: 50%;
+            bottom: 50%;
+            padding: 0;
+            transform-origin: bottom left;
+          `,
+          childCss: css`
+            transform: skewY(${-(share - 90)}deg) rotate(${share / 2}deg);
+          `,
+          color: data.color,
+        };
+      });
+      return transformData.map((data, index) => (
+        <Item key={index} data={data} index={index} />
+      ));
+    } else {
+      const transformData = itemList.map((data, index) => {
+        return {
+          name: data.name,
+          wedgeCss: css`
+            width: 50%;
+            height: 100%;
+            left: ${index === 1 ? "0%" : "50%"};
+          `,
+          childCss: css``,
+          color: data.color,
+        };
+      });
+      return transformData.map((data, index) => (
+        <Item key={index} data={data} index={index} />
+      ));
+    }
+  }, [itemList]);
 
   const handleEndTransition = useCallback(() => {
     console.log(tempResult);
@@ -120,7 +119,12 @@ const Spinner = () => {
         <SpinnerIndicator deg={deg} onTransitionEnd={handleEndTransition} />
         <CenterPoint />
       </SpinnerContainer>
-      You got {result?.color}
+      <h1 style={{ textAlign: "center" }}>
+        You got{" "}
+        <div
+          style={{ width: 100, height: 16, background: `${result?.color}` }}
+        ></div>
+      </h1>
       <Button style={{ marginTop: 24 }} block size="large" onClick={handleSpin}>
         Spin now
       </Button>
